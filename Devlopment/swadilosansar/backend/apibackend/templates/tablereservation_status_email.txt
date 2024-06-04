@@ -1,0 +1,14 @@
+Subject: Table Reservation Confirmation
+
+Dear {{ tablereservation.user.name }},
+
+We're thrilled to confirm that your recent booking with us has been successfully reserved.
+
+Your appointment is now confirmed. Rest assured, we're committed to providing you with an exceptional experience, ensuring every moment is enjoyable and seamless.
+
+Should you have any questions or need further assistance, feel free to reach out to our support team. We're here to help with any inquiries you may have.
+
+Thank you for selecting us for your reservation. Your trust means the world to us, and we eagerly anticipate welcoming you soon.
+
+Best regards,
+SwadiloSANSAR

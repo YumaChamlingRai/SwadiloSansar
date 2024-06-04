@@ -1,0 +1,94 @@
+*{
+    font-family: candara;
+ }
+
+
+.navbar {
+    background-color: #F9BC18;
+    font-size: 20px;
+}
+
+.navbar-brand {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-right: 50px;
+    color: #9b7816;
+}
+
+.nav-link:hover {
+    font-weight: 400;
+}
+
+.nav-item {
+    margin-bottom: 10px; /* Add margin-bottom to create space between the navbar items */
+    margin-left: 30px;
+    
+}
+
+.product_table{
+    margin-top: 100px;
+}
+
+
+.product_btn{
+    background-color: #127538;
+    color:white;
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.card{
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Adjust values as needed */
+    transition: box-shadow 0.3s ease;
+}
+.card:hover {
+     box-shadow: 0 8px 12px rgba(0, 0, 0, 0.4);
+}
+
+.delbtn{
+    background-color: rgb(175, 32, 32);
+    color: white;
+}
+
+.delbtn:hover{
+    background-color: rgb(117, 8, 8);
+    color: white;
+}
+
+.editbtn{
+    background-color: #9b7816;
+    color: white;
+}
+
+.editbtn:hover{
+    background-color: rgb(193, 177, 32);
+    color: white;
+}
+
+.dropdown-item:focus,
+.dropdown-item:active {
+    outline: none; /* Or box-shadow: none; */
+}
+
+
+.photo-preview {
+    width: 200px; /* Adjust as needed */
+    height: 200px; /* Adjust as needed */
+    border: 2px solid #ccc;
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Ensure the image doesn't overflow the box */
+}
+
+.photo-preview img {
+    width: 100%; /* Make the image cover the whole box horizontally */
+    height: 100%; /* Make the image cover the whole box vertically */
+    object-fit: cover; /* Maintain aspect ratio while covering the box */
+}
+
+
+.table-order{
+    margin-top: 100px;
+}

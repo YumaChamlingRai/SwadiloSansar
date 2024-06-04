@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="css/vendor.css" />
+    
+     <!-- Favicon -->
+     <link rel="icon" href="web_img/weblogo.png" />
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top"> <!-- Added fixed-top class here -->
+        <div class="container">
+            <a class="navbar-brand" href="#">Swadilo Sansar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+                <ul class="navbar-nav mb-2 mt-2 mb-lg-0 mt-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="vendor.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="vendorproduct.html"><i class="fas fa-cart-plus "></i> Product</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="orders.html"><i class="fas fa-utensils"></i> Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="reservation.html"><i class="fas fa-chair"></i> Reservation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="review.html"><i class="far fa-comments"></i> Review</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="container table-order">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2>Customer Reviews</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Feedback</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reviewList">
+                                <!-- Feedback rows will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // Function to fetch and render feedback list
+            async function fetchAndRenderFeedbacks() {
+                const response = await fetch('http://127.0.0.1:8000/list/');
+                const feedbacks = await response.json();
+
+                const reviewListContainer = document.getElementById("reviewList");
+                reviewListContainer.innerHTML = "";
+
+                feedbacks.forEach(feedback => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${feedback.id}</td>
+                        <td>${feedback.content}</td>
+                    `;
+                    reviewListContainer.appendChild(row);
+                });
+            }
+
+            // Initial render
+            fetchAndRenderFeedbacks();
+        </script>
+        
+    </div>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

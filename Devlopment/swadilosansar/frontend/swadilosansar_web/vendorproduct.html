@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Product</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        integrity="sha512-..." crossorigin="anonymous" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="css/vendor.css" />
+    <!-- Favicon -->
+    <link rel="icon" href="web_img/weblogo.png" />
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top"> <!-- Added fixed-top class here -->
+        <div class="container">
+            <a class="navbar-brand" href="#">Swadilo Sansar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+                <ul class="navbar-nav mb-2 mt-2 mb-lg-0 mt-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="vendor.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="vendorproduct.html"><i class="fas fa-cart-plus "></i> Product</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="orders.html"><i class="fas fa-utensils"></i> Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="reservation.html"><i class="fas fa-chair"></i> Reservation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="review.html"><i class="far fa-comments"></i> Review</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container product_table">
+        <div class="row">
+            <div class="col-md-6 col-lg-12">
+                <div class="container">
+                    <h3 class="mb-4 mt-5">Swadilo Foods</h3>
+
+                    <!-- Category filter buttons -->
+                    <div class="mb-3">
+                        <button class="btn product_btn category-filter" data-category="all">All</button>
+                        <button class="btn product_btn category-filter" data-category="offer">Offer Product</button>
+                        <button class="btn product_btn category-filter" data-category="momo">Momo</button>
+                        <button class="btn product_btn category-filter" data-category="sekuwa">Sekuwa</button>
+                        <button class="btn product_btn category-filter" data-category="noodles">Noodles</button>
+                        <button class="btn product_btn category-filter" data-category="acchar">Acchar</button>
+                        <button class="btn product_btn category-filter" data-category="set">Nepali Set</button>
+                        <button class="btn product_btn category-filter" data-category="selroti">Sel Roti</button>
+                        <button class="btn product_btn category-filter" data-category="chatamari">Chatamari</button>
+                        <!-- Add more category buttons as needed -->
+                    </div>
+
+                    <!-- Product list -->
+                    <div id="product-list" class="row">
+                        <!-- Product cards will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Replace the existing script tag with this updated script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Function to fetch and display food items based on category
+            function displayFoodItems(category) {
+                fetch(`http://127.0.0.1:8000/all/products_app/?category=${category}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const productList = document.getElementById('product-list');
+                        productList.innerHTML = ''; // Clear previous items
+
+                        // Loop through the retrieved food items and create HTML elements
+                        data.forEach(item => {
+                            console.log('Image URL:', item.image); // Log the image URL
+                            const card = document.createElement('div');
+                            card.classList.add('col-md-4', 'mb-4');
+
+                            // Use the image URL provided by the API directly
+                            const imageUrl = item.image;
+
+                            card.innerHTML = `
+                                <div class="card">
+                                    <img src="${imageUrl}" class="card-img-top" alt="${item.title}" style="width: 100%; height: 200px;"> <!-- Adjusted image size -->
+                                    <div class="card-body">
+                                        <h5 class="card-title">${item.title}</h5>
+                                        <p class="card-text">${item.description}</p>
+                                        <p class="card-text">${item.price}</p>
+                                        <button class="btn btn-danger delete-btn" data-id="${item.id}">Delete</button> <!-- Delete button -->
+                                    </div>
+                                </div>
+                            `;
+
+                            productList.appendChild(card); // Append card to product list
+                        });
+                    })
+                    .catch(error => console.error('Error fetching food items:', error));
+            }
+
+            // Initial display of all food items
+            displayFoodItems('all');
+
+            // Event listener for category filter buttons
+            const categoryButtons = document.querySelectorAll('.category-filter');
+            categoryButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const category = this.getAttribute('data-category');
+                    displayFoodItems(category);
+                });
+            });
+
+            // Event listener for delete buttons
+            document.addEventListener('click', function (event) {
+                if (event.target.classList.contains('delete-btn')) {
+                    const itemId = event.target.getAttribute('data-id');
+                    fetch(`http://127.0.0.1:8000/foodItems/${itemId}/delete/`, {
+                        method: 'DELETE'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            // Reload the page to reflect changes after deletion
+                            window.location.reload();
+                            alert('Item deleted successfully!'); // Display success message
+                        } else {
+                            console.error('Error deleting item:', response.statusText);
+                        }
+                    })
+                    .catch(error => console.error('Error deleting item:', error));
+                } else if (event.target.classList.contains('update-btn')) {
+                    const itemId = event.target.getAttribute('data-id');
+                    window.location.href = `update_food_item.html?id=${itemId}`; // Redirect to update page
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,134 @@
+*{
+    font-family: candara;
+ }
+
+
+.navbar {
+    background-color: #F9BC18;
+    font-size: 20px;
+}
+
+.navbar-brand {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-right: 80px;
+    color: #9b7816;
+}
+
+.nav-link:hover {
+    font-weight: 400;
+}
+
+.nav-item {
+    margin-bottom: 10px; /* Add margin-bottom to create space between the navbar items */
+    margin-left: 50px;
+    
+}
+/*account registration*/
+
+.btn-color{
+   
+    background-color: #F9BC18;
+    color: #fff;
+    font-size: 20px;
+    
+  }
+  
+  .btn-color:hover{
+    background-color: #9b7816;
+  }
+  .profile-image-pic{
+    height: 200px;
+    width: 200px;
+    object-fit: cover;
+  }
+  
+  
+  
+  .cardbody-color{
+    background-color: white; 
+  }
+  
+  a{
+    text-decoration: none;
+  }
+
+
+/*user info*/
+  .table-info{
+    margin-top: 100px;
+  }
+
+  .table th, .table td {
+    vertical-align: middle;
+}
+.table th {
+    background-color: #f8f9fa;
+    border-top: none;
+    text-align: center;
+}
+.table tbody tr:nth-child(odd) {
+    background-color: #f3f4f6;
+}
+.table tbody tr:hover {
+    background-color: #fbfbfba4;
+}
+.table .btn {
+    width: 100%;
+}
+
+.btn-danger{
+    background-color: rgb(117, 8, 8);
+}
+
+
+/*admin_profile*/
+.form-control:focus {
+    box-shadow: none;
+    border-color: #e8b10f
+}
+
+.profile-button {
+    background: #e8b10f;
+    box-shadow: none;
+    border: none
+}
+
+.profile-button:hover {
+    background: #ad7412
+}
+
+.profile-button:focus {
+    background: #682773;
+    box-shadow: none
+}
+
+.profile-button:active {
+    background: #682773;
+    box-shadow: none
+}
+
+.back:hover {
+    color: #682773;
+    cursor: pointer
+}
+
+.labels {
+    font-size: 11px
+}
+
+.add-experience:hover {
+    background: #BA68C8;
+    color: #fff;
+    cursor: pointer;
+    border: solid 1px #BA68C8
+}
+
+.profilebtn{
+    background-color: #f99018;
+}
+
+.profilebtn:hover{
+    background-color: #9b7816;
+    color: #fff;
+}

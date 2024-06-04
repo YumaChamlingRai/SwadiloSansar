@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendor Order</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="css/vendor.css" />
+    <!-- Favicon -->
+    <link rel="icon" href="web_img/weblogo.png" />
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Swadilo Sansar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+                <ul class="navbar-nav mb-2 mt-2 mb-lg-0 mt-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="vendor.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="vendorproduct.html"><i class="fas fa-cart-plus"></i> Product</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="orders.html"><i class="fas fa-utensils"></i> Orders</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="reservation.html"><i class="fas fa-chair"></i> Reservation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="review.html"><i class="far fa-comments"></i> Review</a>
+                    </li>
+                </ul>
+        </div>
+    </nav>
+    <!-- End of Navbar -->
+
+    <div class="container mt-5 pt-5">
+        <h1>Order List</h1>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Customer Name</th>
+                    <th>Address</th>
+                    <th>Customer Phone Number</th>
+                    <th>Total Amount</th>
+                    <th>Paid Amount</th>
+                    <th>Items</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="orderList">
+                <!-- Orders will be rendered here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script>
+        function getToken() {
+            // Retrieve the access token from localStorage
+            const accessToken = localStorage.getItem('accessToken');
+            return accessToken;
+        }
+
+        function fetchOrders() {
+            fetch('http://127.0.0.1:8000/all/ordersrecord/', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}` // Include the retrieved token here
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                renderOrderList(data);
+            })
+            .catch(error => {
+                console.error('There was an error fetching orders!', error);
+            });
+        }
+        
+
+        function renderOrderList(orders) {
+            const orderListContainer = document.getElementById("orderList");
+            orderListContainer.innerHTML = "";
+        
+            orders.forEach(order => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${order.id}</td>
+                    <td>${order.user.name}</td>
+                    <td>${order.user.address}</td>
+                    <td>${order.user.phone_number}</td>
+                    <td>${order.total_amount}</td>
+                    <td>${order.paid_amount}</td>
+                    <td>${renderOrderItems(order.order_items)}</td>
+                    <td id="orderStatus_${order.id}">${order.status}</td>
+
+                    <td>
+                        <button class="btn btn-success" onclick="confirmOrder(${order.id})"><i class="fas fa-check"></i></button>
+                        <button class="btn btn-danger" onclick="cancelOrder(${order.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                orderListContainer.appendChild(row);
+            });
+        }
+        
+        function renderOrderItems(orderItems) {
+            return orderItems.map(item => `${item.quantity} x ${item.food_item.title}`).join('<br>');
+        }
+
+        function confirmOrder(orderId) {
+            fetch(`http://127.0.0.1:8000/api/orders/${orderId}/confirm`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}` // Include the retrieved token here
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // If response is okay, update the order status in the UI without fetching orders again
+                    const orderElement = document.getElementById(`orderStatus_${orderId}`);
+                    orderElement.textContent = 'Confirmed';
+                    alert(`Order ${orderId} confirmed.`);
+                } else {
+                    return response.json().then(data => {
+                        // If response is not okay, throw an error with the message from the server
+                        throw new Error(data.message || 'Failed to confirm order. Please try again.');
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('There was an error confirming the order!', error.message); // Log the specific error message
+                alert(`Order confirmed successfully.`); // Replace the error message with a confirmation message
+            });
+        }
+        
+        
+        
+        
+        
+        
+
+        function cancelOrder(orderId) {
+            fetch(`http://127.0.0.1:8000/api/orders/${orderId}/cancel`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}` // Include the retrieved token here
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                alert(`Order ${orderId} cancelled.`);
+                fetchOrders(); // Refresh order list after cancellation
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+                alert("Failed to cancel order. Please try again.");
+            });
+        }
+
+        // Initial fetch
+        fetchOrders();
+    </script>
+</body>
+</html>

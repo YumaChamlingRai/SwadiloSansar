@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="css/admin.css" />
+    <!-- Favicon -->
+    <link rel="icon" href="web_img/weblogo.png" />
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Swadilo Sansar</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarSupportedContent">
+                <ul class="navbar-nav mb-2 mt-2 mb-lg-0 mt-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="admin.html"><i class="fas fa-user"></i> SwadiloSansar Family</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="userreg.html"><i class="fas fa-registered"></i> Registration</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user"></i> 
+                        </a>
+                        <ul class="dropdown-menu mt-1" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="changepassword.html"><i class="fas fa-key"></i> Change Password</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-unlock-alt"></i> Reset Password</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="container table-info">
+        <div class="row">
+            <div class="col-md-6 col-lg-12">
+                <h2 class="mb-4">User Information</h2>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Email</th>
+                                <th>Phone Number</th>
+                                <th>Name</th>
+                                <th>Address</th>
+                                <th>User Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="userList">
+                            <!-- User list will be dynamically populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Function to handle user logout
+        function logoutUser() {
+            localStorage.removeItem('accessToken'); // Remove access token
+            localStorage.removeItem('refreshToken'); // Remove refresh token
+            localStorage.removeItem('role'); // Remove user role
+            // Display logout successful message
+            alert('Logout successful');
+            // Redirect to login page
+            window.location.href = 'login.html';
+        }
+  
+        // Function to retrieve access token from local storage
+        function getAccessToken() {
+            return localStorage.getItem('accessToken');
+        }
+
+        // Function to fetch users from the backend and render them
+        function fetchUsers() {
+            const token = getAccessToken(); // Retrieve the token from local storage
+            if (!token) {
+                alert('You are not logged in. Please log in to view this page.');
+                window.location.href = 'login.html'; // Redirect to login page if no token
+                return;
+            }
+    
+            fetch('http://127.0.0.1:8000/api/users/', {
+                headers: {
+                    'Authorization': `Bearer ${token}`, // Add token to Authorization header
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch users');
+                }
+                return response.json();
+            })
+            .then(data => {
+                renderUsers(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to fetch users');
+            });
+        }
+
+        // Function to render the list of users in HTML
+        function renderUsers(users) {
+            const userListContainer = document.getElementById('userList');
+            userListContainer.innerHTML = ''; // Clear previous content
+    
+            users.forEach(user => {
+                const userRow = document.createElement('tr'); // Create a table row
+                userRow.innerHTML = `
+                    <td>${user.id}</td> 
+                    <td>${user.email}</td>
+                    <td>${user.phone_number}</td>
+                    <td>${user.name}</td>
+                    <td>${user.address}</td>
+                    <td>${user.user_type}</td>
+                    <td>
+                        <button class="btn btn-danger" onclick="deleteUser(${user.id})">Delete</button>
+                    </td>
+                `;
+                userListContainer.appendChild(userRow);
+            });
+        }
+
+        // Function to handle user deletion
+        function deleteUser(userId) {
+            const token = getAccessToken(); // Retrieve the token from local storage
+            if (!token) {
+                alert('You are not logged in. Please log in to view this page.');
+                window.location.href = 'login.html'; // Redirect to login page if no token
+                return;
+            }
+            console.log('User ID:', userId); 
+            if (confirm('Are you sure you want to delete this user?')) {
+                fetch(`http://127.0.0.1:8000/api/users/${userId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`, // Add token to Authorization header
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Reload the user list after successful deletion
+                        fetchUsers();
+                        alert('User deleted successfully');
+                    } else {
+                        // Handle different error scenarios
+                        if (response.status === 404) {
+                            throw new Error('User not found.');
+                        } else {
+                            throw new Error('Failed to delete user.');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert(error.message);
+                });
+            }
+        }
+
+        // Fetch users when the page loads
+        fetchUsers();
+    </script>
+</body>
+</html>
